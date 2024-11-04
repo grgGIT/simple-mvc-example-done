@@ -4,6 +4,9 @@ const models = require('../models');
 // get the Cat model
 const { Cat } = models;
 
+//get the Dog model
+const { Dog } = models;
+
 // Function to handle rendering the index page.
 const hostIndex = async (req, res) => {
   //Start with the name as unknown
@@ -23,9 +26,16 @@ const hostIndex = async (req, res) => {
       sort: {'createdDate': 'descending'}
     }).lean().exec();
 
+    const docD = await Dog.findOne({}, {}, { 
+      sort: {'createdDate': 'descending'}
+    }).lean().exec();
     //If we did get a cat back, store it's name in the name variable.
     if(doc) {
       name = doc.name;
+    }
+    else if(docD) {
+      name = docD.name;
+      age = docD.age + 1;
     }
   } catch (err) {
     //Just log out the error for our records.
@@ -74,6 +84,7 @@ const hostPage1 = async (req, res) => {
        can be removed. However, mongoose gives better error messages if we use it.
     */
     const docs = await Cat.find({}).lean().exec();
+    
 
     // Once we get back the docs array, we can send it to page1.
     return res.render('page1', { cats: docs });
@@ -98,6 +109,11 @@ const hostPage2 = (req, res) => {
 // Function to render the untemplated page3.
 const hostPage3 = (req, res) => {
   res.render('page3');
+};
+
+//runs page4
+const hostPage4 = (req, res) => {
+  res.render('page4');
 };
 
 // Get name will return the name of the last added cat.
@@ -289,6 +305,7 @@ module.exports = {
   page1: hostPage1,
   page2: hostPage2,
   page3: hostPage3,
+  page4: hostPage4,
   getName,
   setName,
   updateLast,
