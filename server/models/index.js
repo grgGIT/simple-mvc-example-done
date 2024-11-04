@@ -1,6 +1,6 @@
 module.exports.Cat = require('./Cat.js');
 module.exports.Dog = require('./Dog.js');
-//^exports dog
+// ^exports dog
 
 // index.js gets automatically pulled when a folder is required
 // We use this to our advantage to define an API for this package.

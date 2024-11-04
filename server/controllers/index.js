@@ -4,16 +4,16 @@ const models = require('../models');
 // get the Cat model
 const { Cat } = models;
 
-//get the Dog model
+// get the Dog model
 const { Dog } = models;
 
 // Function to handle rendering the index page.
 const hostIndex = async (req, res) => {
-  //Start with the name as unknown
+  // Start with the name as unknown
   let name = 'unknown';
   let age = null; // Declare age variable
 
-  try{
+  try {
     /* Cat.findOne() will find a cat that matches the query given to it as the first parameter.
        In this case, we give it an empty object so it will match against any object it finds.
        The second parameter is essentially a filter for the values we want. This works similarly
@@ -23,23 +23,16 @@ const hostIndex = async (req, res) => {
        in descending order (so that more recent things are "on the top"). Since we are only
        finding one, this query will either find the most recent cat if it exists, or nothing.
     */
-    const doc = await Cat.findOne({}, {}, { 
-      sort: {'createdDate': 'descending'}
-    }).lean().exec();
+    const doc = await Cat.findOne({}, {}, { sort: { createdDate: 'descending' } }).lean().exec();
+    const docD = await Dog.findOne({}, {}, { sort: { createdDate: 'descending' } }).lean().exec();
 
-    const docD = await Dog.findOne({}, {}, { 
-      sort: {'createdDate': 'descending'}
-    }).lean().exec();
-    //If we did get a cat back, store it's name in the name variable.
-    if(doc) {
+    if (doc) {
       name = doc.name;
-    }
-    else if(docD) {
+    } else if (docD) {
       name = docD.name;
       age = docD.age + 1;
     }
   } catch (err) {
-    //Just log out the error for our records.
     console.log(err);
     return res.status(500).json({ error: 'Failed to retrieve data' });
   }
@@ -87,7 +80,6 @@ const hostPage1 = async (req, res) => {
        can be removed. However, mongoose gives better error messages if we use it.
     */
     const docs = await Cat.find({}).lean().exec();
-    
 
     // Once we get back the docs array, we can send it to page1.
     return res.render('page1', { cats: docs });
@@ -114,10 +106,10 @@ const hostPage3 = (req, res) => {
   res.render('page3');
 };
 
-//runs page4
+// runs page4
 const hostPage4 = async (req, res) => {
   try {
-    const dogs = await DogModel.find().lean(); // Retrieve all dogs from the database
+    const dogs = await Dog.find().lean(); // Retrieve all dogs from the database
     res.render('page4', { title: 'Page 4', dogs }); // Render the page4 view with the list of dogs
   } catch (err) {
     console.log(err);
@@ -127,7 +119,7 @@ const hostPage4 = async (req, res) => {
 
 // Get name will return the name of the last added cat.
 const getName = async (req, res) => {
-  try{
+  try {
     /* Here we are trying to do the exact same thing we did in host index up
        above. We want to find the most recently added cat. The only difference
        here is that we are using the query .sort() function rather than passing
@@ -135,21 +127,21 @@ const getName = async (req, res) => {
        functionally the same. We are just seeing that it can be written in
        more than one way.
     */
-    const doc = await Cat.findOne({}).sort({'createdDate': 'descending'}).lean().exec();
+    const doc = await Cat.findOne({}).sort({ createdDate: 'descending' }).lean().exec();
 
-    //If we did get a cat back, store it's name in the name variable.
-    if(doc) {
-      return res.json({name: doc.name});
+    // If we did get a cat back, store it's name in the name variable.
+    if (doc) {
+      return res.json({ name: doc.name });
     }
-    return res.status(404).json({error: 'No cat found'});
+    return res.status(404).json({ error: 'No cat found' });
   } catch (err) {
     /* If an error occurs, it means something went wrong with the database. We will
        give the user a 500 internal server error status code and an error message.
     */
     console.log(err);
-    return res.status(500).json({error: 'Something went wrong contacting the database'});
+    return res.status(500).json({ error: 'Something went wrong contacting the database' });
   }
-}
+};
 
 // Function to create a new cat in the database
 const setName = async (req, res) => {
@@ -277,15 +269,15 @@ const updateLast = (req, res) => {
      Finally, findOneAndUpdate would just update the most recent cat it finds that
      matches the query (which could be any cat). So we also need to tell Mongoose to
      sort all the cats in descending order by created date so that we update the
-     most recently added one. The returnDocument key with the 'after' value tells 
+     most recently added one. The returnDocument key with the 'after' value tells
      mongoose to give us back the version of the document AFTER the changes. Otherwise
      it will default to 'before' which gives us the document before the update.
 
      We can use async/await for this, or just use standard promise .then().catch() syntax.
   */
-  const updatePromise = Cat.findOneAndUpdate({}, {$inc: {'bedsOwned': 1}}, {
-    returnDocument: 'after', //Populates doc in the .then() with the version after update
-    sort: {'createdDate': 'descending'}
+  const updatePromise = Cat.findOneAndUpdate({}, { $inc: { bedsOwned: 1 } }, {
+    returnDocument: 'after', // Populates doc in the .then() with the version after update
+    sort: { createdDate: 'descending' },
   }).lean().exec();
 
   // If we successfully save/update them in the database, send back the cat's info.
@@ -335,7 +327,7 @@ const updateDogAgeByName = async (req, res) => {
     const updatedDog = await Dog.findOneAndUpdate(
       { name },
       { $inc: { age: 1 } },
-      { new: true } // Return the updated document
+      { new: true }, // Return the updated document
     ).lean().exec();
 
     if (!updatedDog) {
@@ -363,5 +355,5 @@ module.exports = {
   searchName,
   notFound,
   updateDogAgeByName,
-  createDog
+  createDog,
 };

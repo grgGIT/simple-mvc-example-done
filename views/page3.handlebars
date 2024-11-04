@@ -12,14 +12,14 @@
   <a href="/page4">Page 4</a>
 
   <!-- Form to create a new Dog -->
-  <form action="/dogs/create" method="POST">
-    <label for="dogName">Dog name: </label>
-    <input type="text" name="name" required>
-    <label for="breedName">Breed Name: </label>
-    <input type="text" name="breed" required>
+  <form action="/dogs" method="POST">
+    <label for="name">Name: </label>
+    <input type="text" id = "name" name="name" required>
+    <label for="breed">Breed Name: </label>
+    <input type="text" id = "breed" name="breed" required>
     <label for="age">Age: </label>
-    <input type="number" name="age" min="0" required>
-    <input type="submit" value="Create Dog">
+    <input type="number" id="age" name="age" min="0" required>
+    <button type="submit">Create Dog</button>
   </form>
   
   <br/>
