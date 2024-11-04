@@ -12,32 +12,36 @@
 // Select the database to use.
 use('mongodbVSCodePlaygroundDB');
 
-// Insert a few documents into the sales collection.
-db.getCollection('sales').insertMany([
-  { 'item': 'abc', 'price': 10, 'quantity': 2, 'date': new Date('2014-03-01T08:00:00Z') },
-  { 'item': 'jkl', 'price': 20, 'quantity': 1, 'date': new Date('2014-03-01T09:00:00Z') },
-  { 'item': 'xyz', 'price': 5, 'quantity': 10, 'date': new Date('2014-03-15T09:00:00Z') },
-  { 'item': 'xyz', 'price': 5, 'quantity': 20, 'date': new Date('2014-04-04T11:21:39.736Z') },
-  { 'item': 'abc', 'price': 10, 'quantity': 10, 'date': new Date('2014-04-04T21:23:13.331Z') },
-  { 'item': 'def', 'price': 7.5, 'quantity': 5, 'date': new Date('2015-06-04T05:08:13Z') },
-  { 'item': 'def', 'price': 7.5, 'quantity': 10, 'date': new Date('2015-09-10T08:43:00Z') },
-  { 'item': 'abc', 'price': 10, 'quantity': 5, 'date': new Date('2016-02-06T20:20:13Z') },
+// Insert a few documents into the dogs collection.
+db.getCollection('dogs').insertMany([
+  { name: 'Buddy', breed: 'Golden Retriever', age: 3, createdDate: new Date('2021-01-01T08:00:00Z') },
+  { name: 'Max', breed: 'Bulldog', age: 5, createdDate: new Date('2021-02-01T09:00:00Z') },
+  { name: 'Bella', breed: 'Poodle', age: 2, createdDate: new Date('2021-03-15T09:00:00Z') },
 ]);
 
-// Run a find command to view items sold on April 4th, 2014.
-const salesOnApril4th = db.getCollection('sales').find({
-  date: { $gte: new Date('2014-04-04'), $lt: new Date('2014-04-05') }
-}).count();
-
-// Print a message to the output window.
-console.log(`${salesOnApril4th} sales occurred in 2014.`);
-
-// Here we run an aggregation and open a cursor to the results.
-// Use '.toArray()' to exhaust the cursor to return the whole result set.
-// You can use '.hasNext()/.next()' to iterate through the cursor page by page.
-db.getCollection('sales').aggregate([
-  // Find all of the sales that occurred in 2014.
-  { $match: { date: { $gte: new Date('2014-01-01'), $lt: new Date('2015-01-01') } } },
-  // Group the total sales for each product.
-  { $group: { _id: '$item', totalSaleAmount: { $sum: { $multiply: [ '$price', '$quantity' ] } } } }
+// Insert a few documents into the cats collection.
+db.getCollection('cats').insertMany([
+  { name: 'Whiskers', bedsOwned: 2, createdDate: new Date('2021-01-01T08:00:00Z') },
+  { name: 'Shadow', bedsOwned: 3, createdDate: new Date('2021-02-01T09:00:00Z') },
+  { name: 'Luna', bedsOwned: 1, createdDate: new Date('2021-03-15T09:00:00Z') },
 ]);
+
+// Run a find command to view the most recently added dog.
+const recentDog = db.getCollection('dogs').find({}, {}, { 
+  sort: {'createdDate': 'descending'}
+}).limit(1).toArray();
+
+// Print the most recent dog's name to the output window.
+if (recentDog.length > 0) {
+  console.log(`Most recent dog: ${recentDog[0].name}`);
+}
+
+// Run an aggregation to find the total number of beds owned by cats.
+const totalBeds = db.getCollection('cats').aggregate([
+  { $group: { _id: null, totalBeds: { $sum: '$bedsOwned' } } }
+]).toArray();
+
+// Print the total number of beds owned by cats.
+if (totalBeds.length > 0) {
+  console.log(`Total beds owned by cats: ${totalBeds[0].totalBeds}`);
+}

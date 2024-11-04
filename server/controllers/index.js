@@ -11,6 +11,7 @@ const { Dog } = models;
 const hostIndex = async (req, res) => {
   //Start with the name as unknown
   let name = 'unknown';
+  let age = null; // Declare age variable
 
   try{
     /* Cat.findOne() will find a cat that matches the query given to it as the first parameter.
@@ -40,6 +41,7 @@ const hostIndex = async (req, res) => {
   } catch (err) {
     //Just log out the error for our records.
     console.log(err);
+    return res.status(500).json({ error: 'Failed to retrieve data' });
   }
 
   /* res.render will render the given view from the views folder. In this case, index.
@@ -47,6 +49,7 @@ const hostIndex = async (req, res) => {
   */
   res.render('index', {
     currentName: name,
+    currentAge: age, // Include age if needed
     title: 'Home',
     pageName: 'Home Page',
   });
@@ -112,8 +115,14 @@ const hostPage3 = (req, res) => {
 };
 
 //runs page4
-const hostPage4 = (req, res) => {
-  res.render('page4');
+const hostPage4 = async (req, res) => {
+  try {
+    const dogs = await DogModel.find().lean(); // Retrieve all dogs from the database
+    res.render('page4', { title: 'Page 4', dogs }); // Render the page4 view with the list of dogs
+  } catch (err) {
+    console.log(err);
+    res.status(500).send('Error retrieving dogs');
+  }
 };
 
 // Get name will return the name of the last added cat.
@@ -291,12 +300,54 @@ const updateLast = (req, res) => {
     return res.status(500).json({ error: 'Something went wrong' });
   });
 };
+const createDog = async (req, res) => {
+  const { name, breed, age } = req.body;
 
+  // Check if all required fields are provided
+  if (!name || !breed || age === undefined) {
+    return res.status(400).json({ error: 'Name, breed, and age are required' });
+  }
+
+  try {
+    // Create a new dog instance
+    const newDog = new Dog({ name, breed, age });
+    await newDog.save();
+
+    // Send a success response
+    res.status(201).json({ message: 'Dog created successfully', dog: newDog });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: 'Failed to create dog' });
+  }
+};
 // A function to send back the 404 page.
 const notFound = (req, res) => {
   res.status(404).render('notFound', {
     page: req.url,
   });
+};
+
+const updateDogAgeByName = async (req, res) => {
+  const { name } = req.params;
+
+  try {
+    // Find the dog by name and increment its age by 1
+    const updatedDog = await Dog.findOneAndUpdate(
+      { name },
+      { $inc: { age: 1 } },
+      { new: true } // Return the updated document
+    ).lean().exec();
+
+    if (!updatedDog) {
+      return res.status(404).json({ message: 'Dog does not exist' });
+    }
+
+    // Send a success response with the updated dog
+    res.json({ message: 'Dog age updated', dog: updatedDog });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: 'Failed to update dog age' });
+  }
 };
 
 // export the relevant public controller functions
