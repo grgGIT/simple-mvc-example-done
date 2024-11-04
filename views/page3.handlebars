@@ -1,46 +1,35 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
-  <!-- passed in variables in handlebars are surrounded by two curly braces like the following
-       Any variable you pass into res.render will be available by name in the template through
-       the curly braces
-  -->
   <title>{{title}}</title>
 </head>
 <body>
-  <h1>Welcome to page 3</h1>
+  <h1>Dog Management</h1>
   
-  <!-- links or URLs are always GET resources as they are getting (retrieving) a resource -->
   <a href="/">Home</a>
   <a href="/page1">Page 1</a>
   <a href="/page2">Page 2</a>
   <a href="/page4">Page 4</a>
 
-  <form action="/setName" method="POST">
-    <label for="firstname">First name:</label>
-    <input type="text" name="firstname" value="">
-    <label for="lastname">Last Name: </label>
-    <input type="text" name="lastname" value="">
-    <label for="age">Age:</label>
-    <input type="number" name="age" value="">
-    <input type="submit" value="submit">
+  <!-- Form to create a new Dog -->
+  <form action="/dogs/create" method="POST">
+    <label for="dogName">Dog name: </label>
+    <input type="text" name="name" required>
+    <label for="breedName">Breed Name: </label>
+    <input type="text" name="breed" required>
+    <label for="age">Age: </label>
+    <input type="number" name="age" min="0" required>
+    <input type="submit" value="Create Dog">
   </form>
   
   <br/>
   <br/>
   
-
-  <form action="/updateLast" method="POST">
-    <input type="submit" value="Update Last">
-  </form>
-  
-  <br/>
-  <br/>
-  
-  <form action="findByName" method="GET">
+  <!-- Form to find a Dog by name and increase its age -->
+  <form action="/dogs/increaseAge" method="POST">
     <label for="name">Name to search for:</label>
-    <input type="text" name="name" value="">
-    <input type="submit" value="Submit">
+    <input type="text" name="name" required>
+    <input type="submit" value="Increase Age">
   </form>
 
 </body>
