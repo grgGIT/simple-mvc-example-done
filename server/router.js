@@ -35,10 +35,10 @@ const router = (app) => {
   app.post('/updateLast', controllers.updateLast);
 
   // Route for creating a new dog
-router.post('/dogs', createDog);
+app.post('/dogs', controllers.createDog);
 
 // Route for updating a dog's age by name
-router.put('/dogs/:name', updateDogAgeByName);
+app.put('/dogs/:name', controllers.updateDogAgeByName);
 };
 
 // export the router function

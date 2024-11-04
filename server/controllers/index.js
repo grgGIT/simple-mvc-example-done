@@ -362,4 +362,6 @@ module.exports = {
   updateLast,
   searchName,
   notFound,
+  updateDogAgeByName,
+  createDog
 };
